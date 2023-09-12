@@ -100,13 +100,7 @@ def shortest_path(source, target):
         explored = set()
         source_neighbors = neighbors_for_person(source)
         target_neighbors = neighbors_for_person(target)
-        print("##############################################")
-        print("08292023######################################")
-        print("source########################################")
-        #list_of_source_neighbors = [x for x in source_neighbors]
-        #list_of_target_neighbors = [x for x in target_neighbors] 
-        print("target########################################")
-        """ for each record in the list of neighbords"""
+        
         ### (movie_id, person_id)
         for source_record in  [x for x in source_neighbors]:
             #print("source record 0 " + str(source_record))
