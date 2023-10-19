@@ -2,14 +2,18 @@ import csv
 import sys
 
 from util import Node, StackFrontier, QueueFrontier
+import datetime
+
+f = open('log.' + str(datetime.datetime.today().year) + str(datetime.datetime.today().month)  + str(datetime.datetime.today().day) +  str(datetime.datetime.today().hour) + str(datetime.datetime.today().minute) +  str(datetime.datetime.today().second) +    
+         '.txt', 'w')
 
 # Maps names to a set of corresponding person_ids
 names = {}
 
-# Maps person_ids to a dictionary of: name, birth, movies (a set of movie_ids)
+# Maps person_ids to a dictionary of: name, birth, movies 
 people = {}
 
-# Maps movie_ids to a dictionary of: title, year, stars (a set of person_ids)
+# Maps movie_ids to a dictionary of: title, year, stars 
 movies = {}
 
 
@@ -91,47 +95,58 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-    return_list = list()
-    # TODO
-    if(int(source) > 0 and int(target) > 0):
-        node_source = Node(state=source, parent=None, action=None)
-        frontier = QueueFrontier()
-        frontier.add(node_source) ## attention deployment 
-        explored = set()
-        source_neighbors = neighbors_for_person(source)
-        target_neighbors = neighbors_for_person(target)
-        
-        ### (movie_id, person_id)
-        for source_record in  [x for x in source_neighbors]:
-            #print("source record 0 " + str(source_record))
-            """check the target list to see if there is a movie match"""
-            for target_record in  [x for x in target_neighbors]:
-                if(source_record[0] == target_record[0]):
-                    print(str(target_record)    +  "--1")
-                    break
-       
-        
-        
+    
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
+    explored = set()
+    num_explored = 0
+    
+
+    while True:
+
+            # If nothing left in frontier, then no path
+            if frontier.empty():
+                raise Exception("no solution")
+            node = frontier.remove()
+            num_explored += 1
 
             
 
+            if node.state == target:
+                actions = []
+                print("Goal Achieved")
+                
+                while node.parent is not None:
+                    actions.append(tuple([node.action,node.state]))
+                    node = node.parent
 
+                print("Actions length:" + str(len(actions)))
+                
+          
+                print("node state " + node.state)
+                
+                return_actions = actions
+                return_actions.reverse()
+                f = open("someoutput","w")
+                f.write(str(return_actions))
+                f.close()
             
-
-        
-
-    #print(names[target])
-
-    #print(type(names))
-    #print(type(movies))
-    #print(type(people))
-    
-
-    
-
-    #raise NotImplementedError
+                return return_actions
 
 
+           
+            explored.add(node)
+
+            for action, state in neighbors_for_person(node.state):
+                if not frontier.contains_state(state) and state not in [x.state for x in explored]:
+                    child = Node(state=state, parent=node, action=action)
+                    frontier.add(child)
+
+    return actions.reverse() 
+##[('128853', '205'),('114095', '870168')]
+
+     
 def person_id_for_name(name):
     """
     Returns the IMDB id for a person's name,
